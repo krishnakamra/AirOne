@@ -1,0 +1,167 @@
+/* Cascade layer order: reset lowest, then Tailwind base, then components and
+ * finally utilities. */
+@layer reset, theme, base, components, utilities;
+
+@import "tailwindcss" source(none);
+@source "../src";
+@source "../packages/quanta/src";
+@import "@higgsfield/quanta/tailwind.css";
+
+@import "./components/composer/composer.css";
+@import "./components/media-card/media-card.css";
+@import "./components/generation-card/generation-card.css";
+@import "./components/setting-trigger/setting-trigger.css";
+@import "./components/prompt-box/prompt-box.css";
+@import "./components/icon-tile/icon-tile.css";
+
+@import "tw-animate-css";
+
+@custom-variant dark (&:where([data-theme="default-dark"], [data-theme="default-dark"] *));
+
+/* ---------------------------------------------------------------------------
+ * AirOne brand tokens. Cool limestone and ultramarine, taken from the terminal
+ * itself: daylight on aluminum and glass plus the one saturated blue aviation
+ * signage uses for wayfinding. One accent, page wide.
+ * ------------------------------------------------------------------------ */
+@theme {
+  --spacing: 0.25rem;
+
+  --color-paper: #edf0f2;
+  --color-paper-deep: #e1e7ea;
+  --color-ink: #0e1a24;
+  --color-ink-soft: #53646f;
+  --color-line: #c4ced5;
+  --color-accent: #1b39c4;
+  --color-accent-deep: #132a96;
+
+  --font-display:
+    "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@theme inline {
+  --color-background: var(--hf-color-background-primary);
+  --color-foreground: var(--hf-color-text-primary);
+  --color-border: var(--hf-color-border-default);
+  --color-input: var(--hf-color-border-default);
+  --color-ring: var(--hf-color-border-focus);
+}
+
+:root {
+  --radius: 0rem;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    border-color: var(--color-line);
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer components {
+  /* Entrance motion. Elements are VISIBLE by default so a no-JS render and a
+   * headless full page screenshot both show finished content. The .js-motion
+   * class is written onto <html> after mount and is the only thing that plays
+   * the entrance, so nothing can be left stranded at opacity 0. */
+  .ao-rise {
+    opacity: 1;
+  }
+
+  .js-motion .ao-rise {
+    animation: ao-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .js-motion .ao-d1 { animation-delay: 0.07s; }
+  .js-motion .ao-d2 { animation-delay: 0.14s; }
+  .js-motion .ao-d3 { animation-delay: 0.21s; }
+  .js-motion .ao-d4 { animation-delay: 0.28s; }
+  .js-motion .ao-d5 { animation-delay: 0.35s; }
+
+  @keyframes ao-rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 18px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* The route rule that threads the whole site: a hairline with a filled
+   * waypoint node at each end. */
+  .ao-route-rule {
+    position: relative;
+    height: 1px;
+    background-color: var(--color-line);
+  }
+
+  .ao-route-rule::before,
+  .ao-route-rule::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    background-color: var(--color-accent);
+    transform: translateY(-50%);
+  }
+
+  .ao-route-rule::before { left: 0; }
+  .ao-route-rule::after { right: 0; }
+
+  /* Native swipe rail. Used on small screens and whenever the pinned rail is
+   * switched off, so the destination section always works without script. */
+  .ao-swipe {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .ao-swipe::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ao-swipe > * {
+    scroll-snap-align: start;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js-motion .ao-rise {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
