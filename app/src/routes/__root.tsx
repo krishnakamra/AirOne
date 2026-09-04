@@ -89,6 +89,7 @@ function buildHead(meta: AppMeta) {
       },
       ...(favicon ? [{ rel: "icon", href: favicon, type: "image/svg+xml" }] : []),
       { rel: "alternate icon", href: "/assets/favicon-32.png", sizes: "32x32" },
+      { rel: "alternate icon", href: "/assets/favicon-16.png", sizes: "16x16" },
       { rel: "apple-touch-icon", href: "/assets/apple-touch-icon.png", sizes: "180x180" },
       { rel: "manifest", href: "/site.webmanifest" },
     ],
