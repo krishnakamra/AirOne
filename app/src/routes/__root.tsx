@@ -26,6 +26,7 @@ type AppMeta = {
   og_title?: string | null;
   og_description?: string | null;
   og_image_url?: string | null;
+  marketplace_cover_url?: string | null;
   favicon_url?: string | null;
   og_video_url?: string | null;
 };
@@ -53,7 +54,6 @@ function buildHead(meta: AppMeta) {
   const title = meta.og_title ?? DEFAULT_TITLE;
   const description = meta.og_description ?? DEFAULT_DESCRIPTION;
   const ogImage = toOwnAssetUrl(meta.og_image_url);
-  const favicon = toOwnAssetUrl(meta.favicon_url);
   const ogVideo = toOwnAssetUrl(meta.og_video_url);
 
   return {
@@ -87,7 +87,7 @@ function buildHead(meta: AppMeta) {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap",
       },
-      ...(favicon ? [{ rel: "icon", href: favicon, type: "image/svg+xml" }] : []),
+      { rel: "icon", href: "/assets/favicon.svg", type: "image/svg+xml" },
       { rel: "alternate icon", href: "/assets/favicon-32.png", sizes: "32x32" },
       { rel: "alternate icon", href: "/assets/favicon-16.png", sizes: "16x16" },
       { rel: "apple-touch-icon", href: "/assets/apple-touch-icon.png", sizes: "180x180" },
