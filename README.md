@@ -31,24 +31,41 @@ Worker. The project lives in `app/`; run every build command from there.
   (schema in `app/migrations/0002_travel_requests.sql`).
 - `refs/` holds the generated reference boards the build was designed against.
 
-## Static export
+## Deploying to Netlify
 
-`scripts/export-static.py` mirrors the deployed site into a portable bundle of
-clean-URL directories, so it drops onto any ordinary static host (Netlify,
-Vercel, S3 plus CloudFront, nginx, Apache, GitHub Pages) with no rewrite rules
-and no server:
+`scripts/export-static.py` mirrors the site into `static/`: a self-contained
+bundle of clean-URL directories with no build step, no server and no
+dependencies. Drag that folder onto https://app.netlify.com/drop, or:
 
 ```bash
 python3 scripts/export-static.py
-python3 -m http.server --directory static
+cd static && netlify deploy --dir . --prod
 ```
 
 Pages, styling, images and the client bundle all carry over, so the mobile
-menu, the fare and city filters and the destination rail keep working. The
-contact form is the one exception: it posts to a server function that only
-exists on the Worker, so in the static bundle it falls back to opening a
-prefilled email to the desk. Point it at a real form endpoint when you have
-one.
+menu, the fare and city filters and the destination rail keep working.
+
+The contact form is rewired to **Netlify Forms** on the way out. The form name,
+the `data-netlify` flag and the hidden `form-name` input are written into
+`contact/index.html`, which is what Netlify parses at deploy time, so
+submissions show up under Forms in the site dashboard with no backend at all.
+Turn on notifications there to route them to info@airone.ca. Opened anywhere
+other than Netlify, the form falls back to composing an email to the desk.
+
+The bundle also carries a `netlify.toml` with immutable asset caching, security
+headers and legacy link redirects.
+
+### Making the repository self-contained
+
+The generated imagery currently ships with the deployed site rather than with
+this repository. To bring it in once, so a Netlify build from git needs nothing
+external:
+
+```bash
+unzip airone-netlify.zip -d /tmp/airone
+cp /tmp/airone/assets/*.jpg /tmp/airone/assets/*.png app/public/assets/
+git add app/public/assets && git commit -m "Add generated imagery" && git push
+```
 
 ## Contact
 
